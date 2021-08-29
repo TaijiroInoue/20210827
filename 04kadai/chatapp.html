@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<lang="ja">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>chatApp</title>
+    <style>
+      #output li {
+        background: #ccc;
+      }
+    </style>
+    <link rel="stylesheet" href="css/sample.css">
+  </head>
+
+  <body>
+    <h1 class="talk_manu">talk</h1>
+
+    <!-- データ出力場所 -->
+    <div class="chat_area">
+    <div class="output" id="output"></div>
+    <div class="output2" id="output2"></div>
+  </div>
+      
+    </div>
+    <!-- 入力場所を作成しよう -->
+    <form>
+      <fieldset>
+        <legend>チャット入力画面</legend>
+        <div class="chat_box">
+          <div class="chat_user">
+            <div>
+              User1
+            </div>
+            <div>
+              name: <input type="text" id="name">
+            </div>
+            <div>
+              text: <input type="text" id="text">
+            </div>
+            <div>
+              <button type="button" id="send">send</button>
+            </div>
+          </div>
+
+          <div class="chat_user2">
+            <div>
+              User2
+            </div>
+            <div>
+              name: <input type="text" id="name2">
+            </div>
+            <div>
+              text: <input type="text" id="text2">
+            </div>
+            <div>
+              <button type="button" id="send2">send</button>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+
+    </form>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- 以下にfirebaseのコードを貼り付けよう -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase.js"></script>
+
+    <script>
+      var firebaseConfig = {
+        
+        authDomain: "chatapp-afd9e.firebaseapp.com",
+        projectId: "chatapp-afd9e",
+        storageBucket: "chatapp-afd9e.appspot.com",
+        messagingSenderId: "87332475306",
+        appId: "1:87332475306:web:a2fdcbe8357f09e9e05bd3"
+      };
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    <script>
+      // 日時をいい感じの形式にする関数
+      function convertFromFirestoreTimestampToDatetime(timestamp) {
+        const _d = timestamp ? new Date(timestamp * 1000) : new Date();
+        const Y = _d.getFullYear();
+        const m = (_d.getMonth() + 1).toString().padStart(2, '0');
+        const d = _d.getDate().toString().padStart(2, '0');
+        const H = _d.getHours().toString().padStart(2, '0');
+        const i = _d.getMinutes().toString().padStart(2, '0');
+        const s = _d.getSeconds().toString().padStart(2, '0');
+        return `${Y}/${m}/${d} ${H}:${i}:${s}`;
+      }
+
+      const db = firebase.firestore().collection('chat');
+      const db2 = firebase.firestore().collection('chat2');
+
+      // ユーザー1
+      $('#send').on('click', function () {
+        const data = {
+          name: $('#name').val(),
+          text: $('#text').val(),
+          time: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        db.add(data);
+        $('#text').val('');
+      });
+
+      $('#text').on('keydown', function (e) {
+        if (e.keyCode === 13) {
+          const data = {
+            name: $('#name').val(),
+            text: $('#text').val(),
+            time: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+          db.add(data);
+          $('#text').val('');
+        }
+      });
+      // db内の生データを取得し、データに変更が生じたタイミングで{}内の処理が実行される
+      db.orderBy('time', 'desc').onSnapshot(function (querySnapshot) {
+        console.log(querySnapshot.docs);
+        // 生データを扱いやすい形に変換する処理
+        const dataArray = [];
+        querySnapshot.docs.forEach(function (doc) {
+          const data = {
+            id: doc.id,
+            data: doc.data(),
+          };
+          dataArray.push(data);
+        });
+        console.log(dataArray);
+        // 扱いやすいデータからタグを生成する処理
+        const tagArray = [];
+        dataArray.forEach(function (data) {
+          tagArray.push(`
+          <div id="${data.id}">
+            <p>${data.data.name} at ${convertFromFirestoreTimestampToDatetime(data.data.time?.seconds)}</p> 
+            <p>${data.data.text}</p>
+          </div>
+  `);
+
+        });
+        // 画面にタグを出力する処理
+        // 便利機能→オプショナルチェイニング「?」：とりあえずスルーしてくれる
+        $('#output').html(tagArray);
+      });
+
+      // ユーザー2
+      $('#send2').on('click', function () {
+        const data = {
+          name: $('#name2').val(),
+          text: $('#text2').val(),
+          time: firebase.firestore.FieldValue.serverTimestamp(),
+        };
+        db2.add(data);
+        $('#text2').val('');
+      });
+
+      $('#text2').on('keydown', function (e) {
+        if (e.keyCode === 13) {
+          const data = {
+            name: $('#name2').val(),
+            text: $('#text2').val(),
+            time: firebase.firestore.FieldValue.serverTimestamp(),
+          };
+          db2.add(data);
+          $('#text2').val('');
+        }
+      });
+      // db内の生データを取得し、データに変更が生じたタイミングで{}内の処理が実行される
+      db2.orderBy('time', 'desc').onSnapshot(function (querySnapshot) {
+        console.log(querySnapshot.docs);
+        // 生データを扱いやすい形に変換する処理
+        const dataArray = [];
+        querySnapshot.docs.forEach(function (doc) {
+          const data = {
+            id: doc.id,
+            data: doc.data(),
+          };
+          dataArray.push(data);
+        });
+        console.log(dataArray);
+        // 扱いやすいデータからタグを生成する処理
+        const tagArray = [];
+        dataArray.forEach(function (data) {
+          tagArray.push(`
+          <div id="${data.id}">
+            <p>${data.data.name} at ${convertFromFirestoreTimestampToDatetime(data.data.time?.seconds)}</p> 
+            <p>${data.data.text}</p>
+          </div>
+  `);
+
+        });
+        // 画面にタグを出力する処理
+        // 便利機能→オプショナルチェイニング「?」：とりあえずスルーしてくれる
+        $('#output2').html(tagArray);
+      });
+
+
+
+
+    </script>
+  </body>

@@ -1,0 +1,85 @@
+body{
+    text-align:left;
+    font-size: 16px;
+    width: 60%;
+    margin: auto;
+}
+header{
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+main{
+    border-bottom:1px solid #ccc;
+}
+footer{
+    background-color: #fff;
+    border-bottom:1px solid #ccc;
+    text-align: center;
+}
+p{
+    text-align: center;
+}
+.talk_manu{
+    text-align: center;
+}
+.chat_area{
+    height: 50vh;
+    /* border-radius: 10px; */
+    background: #8DB4E5;
+    display: flex;
+    justify-content: space-around;
+    overflow: scroll
+}
+
+/* .output {
+    position: relative;
+    display: inline;
+    margin: 1.5em 0 1.5em 15px;
+    padding: 7px 10px;
+    min-width: 120px;
+    max-width: 100%;
+    color: #555;
+    font-size: 16px;
+    background: #e0edff;
+    border-radius: 10px;
+}
+.output:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -30px;
+    margin-top: -15px;
+    border: 15px solid transparent;
+    border-right: 20px solid #e0edff;
+    border-radius: 10px;
+} */
+
+ul{
+    padding: 0;
+    display:table;  /* 定義 */
+    table-layout: fixed;
+    width:100%;
+}
+li{
+    text-align: center;
+    list-style-type:none;
+    border: 1px solid #666;
+    background-color: #fff;
+    display:table-cell;  /* 定義 */
+    cursor: pointer;
+    overflow: scroll
+}
+.chat_box{
+    display: flex;
+    justify-content: space-around;
+}
+
+/* .chat_user{
+    justify-content: space-between;
+    justify-content: center;
+}
+.chat_user2{
+    justify-content: space-between;
+    justify-content: center;
+} */
